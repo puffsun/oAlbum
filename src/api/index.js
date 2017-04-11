@@ -1,17 +1,25 @@
 import { version } from '../../package.json';
 import { Router } from 'express';
-import facets from './facets';
+import * as userCtrl from '../controllers/users';
+import * as photoCtrl from '../controllers/photos';
 
 export default ({ config, db }) => {
-	let api = Router();
+    let api = Router();
 
-	// mount the facets resource
-	api.use('/facets', facets({ config, db }));
+    // perhaps expose some API metadata at the root
+    api.get('/', (req, res) => {
+        res.json({ version });
+    });
 
-	// perhaps expose some API metadata at the root
-	api.get('/', (req, res) => {
-		res.json({ version });
-	});
+    api.get('/hb', (req, res) => {
+        res.json('you have new messages...');
+    });
 
-	return api;
+    api.get('/user', userCtrl.get);
+    api.post('/user', userCtrl.create);
+
+    api.get('/photo', photoCtrl.get)
+    api.post('/photo', photoCtrl.create)
+
+    return api;
 }

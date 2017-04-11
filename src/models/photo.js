@@ -98,4 +98,4 @@ PhotoSchema.statics = {
   }
 };
 
-mongoose.model('PhotoModel', PhotoSchema);
+mongoose.model('Photo', PhotoSchema);
