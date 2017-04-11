@@ -1,5 +1,6 @@
 {
-	"port": 8080,
-	"bodyLimit": "100kb",
-	"corsHeaders": ["Link"]
+    "port": 8080,
+    "bodyLimit": "100kb",
+    "corsHeaders": ["Link"],
+    "mongodbURL": "mongodb://127.0.0.1/oalbum"
 }
