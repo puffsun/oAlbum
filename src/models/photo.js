@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-//const notify = require('../notifier');
 
 let Schema = mongoose.Schema;
 

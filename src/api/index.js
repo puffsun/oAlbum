@@ -18,8 +18,8 @@ export default ({ config, db }) => {
     api.get('/user', userCtrl.get);
     api.post('/user', userCtrl.create);
 
-    api.get('/photo', photoCtrl.get)
-    api.post('/photo', photoCtrl.create)
+    api.get('/photo', photoCtrl.getLearningResult)
+    api.post('/photo', photoCtrl.uploadData)
 
     return api;
 }
