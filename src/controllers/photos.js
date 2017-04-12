@@ -1,7 +1,8 @@
 import mongoose from 'mongoose';
-import '../models/photo';
-//import {respond} from '../utils';
 import * as _ from 'lodash';
+
+import '../models/photo';
+import Argus from '../lib/argus_service';
 
 const { wrap: async } = require('co');
 const Photo = mongoose.model('Photo');
@@ -44,6 +45,22 @@ export const heartbeat = async(function* (req, res) {
         console.log('invalid heartbeat: ' + JSON.stringify(req.body));
         res.status(400).send('Bad Request');
     }
+});
+
+export const argus = async(function* (req, res) {
+    let result = yield Argus.request('/v1/tag', {
+        images: [
+            "http://s8.rr.itc.cn/g/wapChange/20163_27_13/a5o81u7785882487405.jpg",
+            "http://img4.cache.netease.com/lady/2015/7/29/20150729153237d41c5.jpg",
+            "http://oj79vjkk1.bkt.clouddn.com/fengjing_shiwai_2.jpg"
+        ],
+        mode: [
+            "face",
+            "scene",
+            "pulp"
+        ]}
+    );
+    res.json({data: result.data});
 });
 
 function isValidPhoto(p) {

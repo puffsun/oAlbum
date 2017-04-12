@@ -2,5 +2,6 @@
     "port": 8080,
     "bodyLimit": "100kb",
     "corsHeaders": ["Link"],
-    "dbURL": "mongodb://127.0.0.1/oalbum"
+    "dbURL": "mongodb://127.0.0.1/oalbum",
+    "argusEndpoint": "http://argus.ataraxia.ai"
 }

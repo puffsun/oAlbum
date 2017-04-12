@@ -7,15 +7,6 @@ import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
 import config from './config.json';
-//import fs from 'fs';
-//import {join} from 'path';
-
-//const models = join(__dirname, './models');
-
-//// Bootstrap models
-//fs.readdirSync(models)
-  //.filter(file => ~file.search(/^[^\.].*\.js$/))
-  //.forEach(file => require(join(models, file)));
 
 let app = express();
 app.server = http.createServer(app);
