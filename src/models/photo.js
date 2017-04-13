@@ -2,14 +2,13 @@ const mongoose = require('mongoose');
 
 let Schema = mongoose.Schema;
 
-const getMeta = tags => tags.join(',');
-const setMeta = tags => tags.split(',');
-
 let PhotoSchema = new Schema({
     url: {type: String, default: '', trim: true},
-    user_id: {type: Schema.ObjectId, ref: 'User'},
-    created_at: {type: Date, default: Date.now},
-    metadata: {type: [], get: getMeta, set: setMeta}
+    //user_id: {type: Schema.ObjectId, ref: 'User'},
+    user_id: {type: String},
+    create_at: {type: Date, default: Date.now},
+    metadata: {type: []},
+    last_modified: {type: Date, default: Date.now}
 });
 
 /**

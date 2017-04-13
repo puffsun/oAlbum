@@ -19,10 +19,16 @@ export const getLearningResult = async(function(req, res) {
 });
 
 export const uploadData = async(function* (req, res) {
-    if (isValidPhoto(req.body)) {
-        let p = new Photo(req.body);
+    let converted = {};
+    _.forOwn(req.body, function(v, k) {
+        converted[_.snakeCase(k)] = v;
+    });
+
+    if (isValidPhoto(converted)) {
+        let p = new Photo(converted);
 
         try {
+            //p = yield Photo.findOneAndUpdate({url: p.url}, p, {upsert: true});
             yield p.save();
             let processedData = yield Argus.request('/v1/tag', {
                 images: [p.url],
@@ -33,12 +39,9 @@ export const uploadData = async(function* (req, res) {
                 ]});
 
             // Update DB with the learning result
-            Photo.update({uri: p.url}, {
-                detection: ['自行车1'],
-                face_cluster: [1, 2],
-                scene: '竞技场1'
-            });
-            res.json(processedData);
+            p.metadata = [processedData.data];
+            p.save();
+            res.json(processedData.data);
         } catch (err) {
             const errors = Object.keys(err.errors).map(field => err.errors[field].message);
             res.json({errors});
@@ -77,7 +80,6 @@ export const heartbeat = async(function* (req, res) {
 });
 
 export const argus = async(function* (req, res) {
-    console.log(req.body);
     let result = yield Argus.request('/v1/tag', {
         images: [
             "http://s8.rr.itc.cn/g/wapChange/20163_27_13/a5o81u7785882487405.jpg",
@@ -112,7 +114,7 @@ function isValidPhoto(p) {
     }
 
     // the photo object should has 'key', 'bucket', 'create_time', 'last_modified'
-    if (!(_.has(p, 'key') && _.has(p, 'bucket') && _.has('create_time') && _.has('last_modified'))) {
+    if (!(_.has(p, 'url') && _.has(p, 'user_id') && _.has(p, 'create_time') && _.has(p, 'last_modified'))) {
         return false;
     }
     return true;
