@@ -24,14 +24,43 @@ export const uploadData = async(function* (req, res) {
 
         try {
             yield p.save();
-            // TODO call Argus for learning results...
-            res.json("Success...");
+            let processedData = yield Argus.request('/v1/tag', {
+                images: [p.url],
+                mode: [
+                    "face",
+                    "scene",
+                    "pulp"
+                ]});
+
+            // Update DB with the learning result
+            Photo.update({uri: p.url}, {
+                detection: ['自行车1'],
+                face_cluster: [1, 2],
+                scene: '竞技场1'
+            });
+            res.json(processedData);
         } catch (err) {
             const errors = Object.keys(err.errors).map(field => err.errors[field].message);
             res.json({errors});
         }
     } else {
         console.log('invalid photo data: ' + JSON.stringify(req.body));
+        res.status(400).send('Bad Request');
+    }
+});
+
+export const uploadDataBatch = async(function* (req, res) {
+    let photos = req.body;
+    if (isValidPhotoArray(photos)) {
+        try {
+            yield Photo.insertMany(photos);
+            res.json("Success...");
+        } catch (err) {
+            const errors = Object.keys(err.errors).map(field => err.errors[field].message);
+            res.json({errors});
+        }
+    } else {
+        console.log('invalid photo array: ' + JSON.stringify(req.body));
         res.status(400).send('Bad Request');
     }
 });
@@ -48,6 +77,7 @@ export const heartbeat = async(function* (req, res) {
 });
 
 export const argus = async(function* (req, res) {
+    console.log(req.body);
     let result = yield Argus.request('/v1/tag', {
         images: [
             "http://s8.rr.itc.cn/g/wapChange/20163_27_13/a5o81u7785882487405.jpg",
@@ -62,6 +92,19 @@ export const argus = async(function* (req, res) {
     );
     res.json({data: result.data});
 });
+
+function isValidPhotoArray(ps) {
+    if (!_.isArray(ps)) {
+        return false;
+    }
+
+    _.each(function(p) {
+        if (isValidPhoto(p)) {
+            return false;
+        }
+    });
+    return true;
+}
 
 function isValidPhoto(p) {
     if (!_.isPlainObject(p)) {
